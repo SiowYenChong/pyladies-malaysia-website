@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} | FAQ{% endblock %}
+
+{% block content %}
+<main class="bg-gray-900 text-white py-16 sm:py-24 lg:py-32">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <header class="mx-auto max-w-2xl lg:mx-0 text-center">
+            <h1 class="text-4xl font-semibold tracking-tight text-white sm:text-6xl">PyLadies Kuala Lumpur FAQ</h1>
+            <p class="mt-6 text-lg text-gray-400">
+                A list of frequently asked questions about our community and events.
+            </p>
+        </header>
+
+        <section class="mt-16">
+            <dl class="question-lest space-y-8">
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <dt class="question-title text-xl font-bold text-white">What is PyLadies?</dt>
+                    <dd class="question-answer mt-2 text-gray-400">
+                        PyLadies is an international mentorship group focused on helping more women become active participants and leaders in the Python open-source community. Our mission is to promote, educate, and advance a diverse Python community. PyLadies Kuala Lumpur is a local chapter dedicated to building a welcoming and inclusive environment for women who are interested in Python.
+                    </dd>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <dt class="question-title text-xl font-bold text-white">Is PyLadies an official training or IT company?</dt>
+                    <dd class="question-answer mt-2 text-gray-400">
+                        No, PyLadies is not a training company or a business. We are a volunteer-run organization and our events are based on the generosity of our members who share their knowledge and passion for Python. Our focus is on community building, not profit.
+                    </dd>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <dt class="question-title text-xl font-bold text-white">Do events have a fee?</dt>
+                    <dd class="question-answer mt-2 text-gray-400">
+                        While PyLadies is a non-profit organization, we may occasionally charge a small fee to cover operational costs such as venue rental, food, or speaker fees. Details for each event's cost will be provided on the registration page.
+                    </dd>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <dt class="question-title text-xl font-bold text-white">How do I attend a PyLadies event?</dt>
+                    <dd class="question-answer mt-2 text-gray-400">
+                        We host regular events including talks and workshops. Everyone is welcome to join our events! Keep an eye on our event page and social media channels for announcements and registration details. You can find links in our footer.
+                    </dd>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <dt class="question-title text-xl font-bold text-white">Why are some events for women only?</dt>
+                    <dd class="question-answer mt-2 text-gray-400">
+                        The tech industry has a very low representation of women. PyLadies was created to provide a comfortable and welcoming space for women to learn and share without feeling intimidated. By creating a women-focused environment, we aim to encourage more women to join and excel in the tech field.
+                    </dd>
+                </div>
+            </dl>
+        </section>
+
+
+    </div>
+</main>
+{% endblock %}

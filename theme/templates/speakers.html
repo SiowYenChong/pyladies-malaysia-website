@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} | Speakers{% endblock %}
+
+{% block content %}
+
+<main class="bg-gray-900 text-white py-16 sm:py-24 lg:py-32">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <header class="mx-auto max-w-2xl lg:mx-0 text-center">
+            <h1 class="text-4xl font-semibold tracking-tight text-white sm:text-6xl">Speaker List</h1>
+            <p class="mt-6 text-lg text-gray-400">
+                Meet our inspiring speakers who have shared their knowledge and experience with the PyLadies KL community.
+            </p>
+        </header>
+
+        <section class="mt-16">
+            <div class="list-filter flex flex-col md:flex-row justify-between items-center bg-gray-800 p-6 rounded-xl shadow-lg">
+                <div class="search-box w-full md:w-2/3 mb-4 md:mb-0">
+                    <div class="search-label text-gray-400 mb-2">Search for a speaker</div>
+                    <input type="text" class="form-control w-full bg-gray-700 text-white rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" id="speaker-query" placeholder="Speaker name or keyword">
+                </div>
+                <div class="filter-box w-full md:w-1/3 md:ml-6 relative">
+                    <div class="filter-label text-gray-400 mb-2">Filter by expertise</div>
+                    <div class="relative inline-block text-left w-full">
+                        <button type="button" class="inline-flex justify-between w-full rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-gray-700 text-sm font-medium text-white hover:bg-gray-600 focus:outline-none" id="filter-button">
+                            Select Expertise
+                            <i class="fa fa-caret-down mt-1"></i>
+                        </button>
+                        <div class="origin-top-right absolute right-0 mt-2 w-full rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 divide-y divide-gray-700 hidden" id="filter-container">
+                            <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="filter-button">
+                                {% for expertise in expertises %}
+                                <div class="form-check p-2">
+                                    <input class="form-check-input hidden" type="checkbox" id="field{{ forloop.counter0 }}" name="{{ expertise }}" data-expertise-name="{{ expertise }}">
+                                    <label class="form-check-label text-gray-300 hover:text-white cursor-pointer" for="field{{ forloop.counter0 }}">
+                                        {{ expertise }}
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mt-8">
+            <h2 class="search-result text-center text-xl font-semibold text-gray-400 mb-8"></h2>
+            <div class="speaker-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                </div>
+        </section>
+    </div>
+</main>
+
+<script>
+    // Speaker data from the Django view
+    const speakersData = JSON.parse('{{ speakers_json|escapejs }}');
+    
+    // Get HTML elements
+    const speakerList = document.querySelector('.speaker-list');
+    const speakerQuery = document.getElementById('speaker-query');
+    const filterButton = document.getElementById('filter-button');
+    const filterContainer = document.getElementById('filter-container');
+    const searchResult = document.querySelector('.search-result');
+
+    let selectedExpertise = [];
+
+    // Function to render speakers
+    function renderSpeakers(speakers) {
+        speakerList.innerHTML = '';
+        if (speakers.length === 0) {
+            speakerList.innerHTML = '<p class="text-center text-gray-500 col-span-full">No speakers found.</p>';
+        }
+        speakers.forEach(speaker => {
+            const card = document.createElement('div');
+            card.className = 'event-card bg-gray-800 rounded-xl overflow-hidden shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-xl';
+            
+            const tagsHtml = speaker.expertise.map(tag => `<span class="bg-indigo-700 text-indigo-100 text-xs font-medium px-2.5 py-0.5 rounded-full inline-block m-1">#${tag}</span>`).join('');
+
+            card.innerHTML = `
+                <section>
+                    <header class="event-card-title p-6 text-center">
+                        <div class="speaker-image">
+                            <img class="w-24 h-24 rounded-full mx-auto object-cover object-top" src="{% static '' %}${speaker.image_url}" alt="${speaker.name}">
+                        </div>
+                        <h3 class="speaker-name text-2xl font-bold mt-4">${speaker.name}</h3>
+                        <h4 class="speaker-title text-indigo-400 mt-1">${speaker.title}</h4>
+                    </header>
+                    <article class="event-card-content p-6 pt-0 text-center">
+                        <p class="tags flex flex-wrap justify-center">
+                            ${tagsHtml}
+                        </p>
+                    </article>
+                </section>
+            `;
+            speakerList.appendChild(card);
+        });
+        searchResult.textContent = `Showing ${speakers.length} results`;
+    }
+
+    // Function to filter and search speakers
+    function filterAndSearchSpeakers() {
+        const query = speakerQuery.value.toLowerCase();
+        const filteredSpeakers = speakersData.filter(speaker => {
+            const nameMatch = speaker.name.toLowerCase().includes(query);
+            const expertiseMatch = selectedExpertise.length === 0 || selectedExpertise.some(expertise => speaker.expertise.includes(expertise));
+            return nameMatch && expertiseMatch;
+        });
+        renderSpeakers(filteredSpeakers);
+    }
+
+    // Event listeners
+    speakerQuery.addEventListener('input', filterAndSearchSpeakers);
+    
+    filterButton.addEventListener('click', () => {
+        filterContainer.classList.toggle('hidden');
+    });
+
+    filterContainer.addEventListener('change', (e) => {
+        if (e.target.type === 'checkbox') {
+            const expertiseName = e.target.dataset.expertiseName;
+            if (e.target.checked) {
+                selectedExpertise.push(expertiseName);
+            } else {
+                selectedExpertise = selectedExpertise.filter(e => e !== expertiseName);
+            }
+            filterAndSearchSpeakers();
+        }
+    });
+
+    // Initial render
+    renderSpeakers(speakersData);
+</script>
+{% endblock %}
