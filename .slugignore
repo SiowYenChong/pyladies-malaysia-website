@@ -1,14 +1,20 @@
-# Ignore large model/data/cache directories
+# Git and temporary files
 .git
 __pycache__
 *.pyc
-.ipynb_checkpoints/
+
+# Virtual environments
+venv/
+env/
+
+# Data science/ML cache and data directories
+# YOU MUST CUSTOMIZE THESE BASED ON WHERE YOUR LARGE FILES LIVE
+.cache/
 data/
 models/
-cache/
-venv/
-.env
-
-# Common ML/Data cache paths (check your project for these)
-~/.cache/
-~/.local/
+notebooks/
+*.onnx # Onnx runtime models
+*.pkl
+*.bin # HuggingFace/Transformer model files
+*.pt  # PyTorch weights
+*.json # If they are large data files and not configuration
