@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} | Blog{% endblock %}
+
+{% block content %}
+<main class="bg-gray-900 text-white min-h-screen py-16 sm:py-24 lg:py-32">
+    <div class="mx-auto max-w-4xl px-6 lg:px-8">
+        <header class="mx-auto max-w-2xl lg:mx-0 text-center mb-16">
+            <h1 class="text-4xl font-semibold tracking-tight text-white sm:text-6xl">PyLadies KL Blog</h1>
+            <p class="mt-6 text-lg text-gray-400">
+                Insights, stories, and updates from the PyLadies Kuala Lumpur community.
+            </p>
+        </header>
+
+        <section class="space-y-12">
+            {% for post in posts %}
+            <article class="bg-gray-800 rounded-xl overflow-hidden shadow-lg p-6 flex flex-col md:flex-row gap-6 items-center transform transition duration-300 hover:scale-[1.01] hover:shadow-2xl">
+                
+                <div class="flex-1 flex flex-col">
+                    <h2 class="text-2xl font-bold text-white mb-2">
+                        <a href="{% url 'blog_detail' slug=post.slug %}" class="hover:text-indigo-400 transition duration-200">
+                            {{ post.title }}
+                        </a>
+                    </h2>
+                    <p class="mt-2 text-gray-300 line-clamp-3">{{ post.summary }}</p>
+                    
+                    <div class="mt-4 flex items-center justify-between">
+                        <time datetime="{{ post.date }}" class="text-sm text-gray-400">{{ post.date|date:"F j, Y" }}</time>
+                        <a href="{% url 'blog_detail' slug=post.slug %}" class="text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1 transition duration-200">
+                            Read more
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                {% if post.image %}
+                <div class="w-full md:w-1/4 flex-shrink-0">
+                    <a href="{% url 'blog_detail' slug=post.slug %}">
+                        <img src="{{ post.image }}" alt="{{ post.title }}" class="rounded-lg object-cover w-full h-32 md:h-24">
+                    </a>
+                </div>
+                {% endif %}
+
+            </article>
+            {% endfor %}
+        </section>
+    </div>
+</main>
+{% endblock %}
