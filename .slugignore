@@ -1,0 +1,14 @@
+# Ignore large model/data/cache directories
+.git
+__pycache__
+*.pyc
+.ipynb_checkpoints/
+data/
+models/
+cache/
+venv/
+.env
+
+# Common ML/Data cache paths (check your project for these)
+~/.cache/
+~/.local/
