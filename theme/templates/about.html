@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} | About Us{% endblock %}
+
+{% block content %}
+
+<main class="bg-gray-900 text-white py-16 sm:py-24 lg:py-32">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <header class="mx-auto max-w-2xl lg:mx-0 text-center">
+            <h1 class="text-4xl font-semibold tracking-tight text-white sm:text-6xl">About PyLadies Kuala Lumpur</h1>
+            <p class="mt-6 text-lg text-gray-400">
+                PyLadies is an international mentorship group focused on helping more women become active participants and leaders in the Python open-source community. Our mission is to promote, educate, and advance a diverse Python community.
+            </p>
+        </header>
+
+        <section class="mt-16 text-center mx-auto max-w-2xl">
+            <h2 class="text-3xl font-semibold text-white mb-4">Our Mission</h2>
+            <p class="text-lg text-gray-400">
+                In addition to the international mission, PyLadies Kuala Lumpur is committed to empowering women to speak up and confidently share their knowledge and ideas at Python events. We provide a supportive platform for members to exchange ideas, build confidence, and become active contributors and leaders within the tech community.
+            </p>
+        </section>
+
+        <section class="mt-16">
+            <h2 class="text-3xl font-semibold text-white mb-8 text-center">Meet Our Team</h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                {% for member in committee_members %}
+                <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-xl">
+                    <img class="w-full h-48 object-cover object-top" src="{% static member.image_url %}" alt="{{ member.name }}">
+                    <div class="p-6 text-center">
+                        <h4 class="text-xl font-semibold text-white">{{ member.name }}</h4>
+                        <p class="text-indigo-400 mt-1">{{ member.role }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        {% if grouppic_urls %}
+        <section class="mt-16">
+            <h2 class="text-3xl font-semibold text-white mb-8 text-center">Our Community</h2>
+            <div class="flex overflow-x-auto space-x-6 pb-6 scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-800">
+                {% for image_url in grouppic_urls %}
+                <div class="flex-none w-80 h-auto rounded-lg overflow-hidden shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-xl">
+                    <img class="w-full h-full object-cover" src="{% static image_url %}" alt="PyLadies KL community photo">
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+    </div>
+</main>
+
+{% endblock %}
