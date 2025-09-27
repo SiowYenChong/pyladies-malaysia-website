@@ -1,1 +1,1 @@
-web: gunicorn --env DJANGO_SETTINGS_MODULE=config.settings config.wsgi --log-file - --pythonpath .
+web: gunicorn --chdir config config.wsgi --log-file -
