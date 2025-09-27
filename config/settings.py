@@ -102,7 +102,8 @@ AWS_QUERYSTRING_AUTH = False
 AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com'
 
 # 3. STATIC FILES (Django looks here)
-STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
+AWS_LOCATION = 'theme/static' 
+STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/' 
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
 
 # IMPORTANT: You must keep STATIC_ROOT for collectstatic to function on Heroku.

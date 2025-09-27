@@ -48,7 +48,7 @@ def list_s3_files(prefix):
         bucket_name = settings.AWS_STORAGE_BUCKET_NAME
         
         # S3 listing path starts with the STATICFILES_STORAGE root, typically "static/"
-        s3_prefix = f"static/{prefix}" 
+        s3_prefix = f"{settings.AWS_LOCATION}/{prefix}" 
 
         response = s3.list_objects_v2(
             Bucket=bucket_name,
