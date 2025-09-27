@@ -1,0 +1,23 @@
+[
+  {
+    "slug": "announcing-our-first-pycon",
+    "title": "Announcing Our First PyCon!",
+    "date": "2025-08-17",
+    "summary": "Join us as we announce our participation in PyCon. We're excited to contribute to the community and showcase the amazing work our members have been doing.",
+    "content": "<h2>PyLadies at PyCon 2025</h2><p>We are incredibly excited to announce that PyLadies Kuala Lumpur will be at PyCon 2025! This is a huge milestone for our local chapter, and we're looking forward to representing our community on a global stage.</p><p>We will have a dedicated booth where you can meet our members, learn about our projects, and get to know our mission. We're also proud to have several members presenting talks and workshops. We can't wait to see you there!</p>"
+  },
+  {
+    "slug": "first-ever-django-workshop",
+    "title": "Recap: First-Ever Django Workshop",
+    "date": "2025-07-20",
+    "summary": "Our inaugural Django workshop was a great success! We had an amazing group of beginners learn the fundamentals of web development with Django.",
+    "content": "<h2>Building Our First Web App</h2><p>A huge thank you to everyone who attended our first Django workshop. The energy and enthusiasm were incredible! Over the course of the day, our members learned how to set up a Django project, create models, and build their first web application from scratch.</p><p>We covered topics such as routing, database migrations, and a brief introduction to the Django Admin. We're already planning our next workshop, so stay tuned for more details!</p>"
+  },
+  {
+    "slug": "welcome-to-pyladies-kl",
+    "title": "Welcome to PyLadies Kuala Lumpur",
+    "date": "2025-06-01",
+    "summary": "We're thrilled to officially launch the PyLadies chapter in Kuala Lumpur. Our mission is to create a safe and welcoming space for women in the Python community.",
+    "content": "<h2>A New Chapter for PyLadies</h2><p>Welcome to the official blog of PyLadies Kuala Lumpur! We are thrilled to officially launch our chapter and start building a supportive and empowering community for women and non-binary individuals who are passionate about Python.</p><p>Our goal is to foster an environment where everyone feels comfortable asking questions, sharing knowledge, and growing their skills. We'll be hosting regular meetups, workshops, and coding sessions. Follow us on social media to stay updated on our upcoming events!</p>"
+  }
+]
