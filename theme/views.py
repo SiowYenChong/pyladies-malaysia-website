@@ -206,40 +206,60 @@ def about(request):
     return render(request, 'about.html', context)
 
 def events(request):
-    events = []
-
-    # REPLACED LOCAL FILE READ
     raw_events_data = fetch_json_from_s3(EVENTS_DATA_PATH)
     
+    # Determine the desired view (Upcoming or Past)
+    is_past_events_page = request.GET.get('m') == 'false'
+    today = datetime.now().date()
+    
+    upcoming_events = []
+    past_events = []
+    
     for event in raw_events_data:
-        # Get the raw date strings from the JSON
         start_date_str = event.get('date')
         end_date_str = event.get('end_date')
 
-        # Format the dates for display
+        # Format the dates for display and determine status
         try:
-            start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+            start_date_obj = datetime.strptime(start_date_str, '%Y-%m-%d')
+            event_date = start_date_obj.date()
+            
+            # Formatting logic
             if end_date_str and start_date_str != end_date_str:
-                # For multi-day events, format as "November 1 - November 2, 2025"
-                end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
-                formatted_date = f"{start_date.strftime('%B %d')} - {end_date.strftime('%B %d, %Y')}"
+                end_date_obj = datetime.strptime(end_date_str, '%Y-%m-%d')
+                formatted_date = f"{start_date_obj.strftime('%B %d')} - {end_date_obj.strftime('%B %d, %Y')}"
             else:
-                # For single-day events, format as "November 1, 2025"
-                formatted_date = start_date.strftime('%B %d, %Y')
-        except (ValueError, TypeError):
-            formatted_date = "Invalid Date" # Handle malformed dates gracefully
+                formatted_date = start_date_obj.strftime('%B %d, %Y')
+        
+            # Add the new formatted_date to the event dictionary
+            event['formatted_date'] = formatted_date
 
-        # Add the new formatted_date to the event dictionary
-        event['formatted_date'] = formatted_date
-        events.append(event)
-    
-    # You'll also need to pass a JSON-formatted version of the events for the calendar
-    events_json = json.dumps(events)
+            # Filter events into the appropriate list
+            if event_date >= today:
+                upcoming_events.append(event)
+            else:
+                past_events.append(event)
+                
+        except (ValueError, TypeError):
+            event['formatted_date'] = "Invalid Date"
+            continue # Skip invalid events
+
+    # Select the correct list based on the page filter
+    if is_past_events_page:
+        # Sort past events newest to oldest (reverse chronological)
+        final_events = sorted(past_events, key=lambda x: datetime.strptime(x['date'], '%Y-%m-%d').date(), reverse=True)
+    else:
+        # Sort upcoming events oldest to newest (chronological)
+        final_events = sorted(upcoming_events, key=lambda x: datetime.strptime(x['date'], '%Y-%m-%d').date())
+        
+    # Pass all raw events data for the calendar component's JavaScript, regardless of view
+    # The calendar usually needs all data to populate the full month/year.
+    events_json = json.dumps(raw_events_data)
     
     context = {
-        'events': events,
+        'events': final_events,
         'events_json': events_json,
-        'is_past_events_page': request.GET.get('m') == 'false'
+        'is_past_events_page': is_past_events_page
     }
 
     return render(request, 'events.html', context)
