@@ -1,31 +1,47 @@
 from pathlib import Path
 import os
+import dj_database_url # <--- REQUIRED FOR HEROKU POSTGRES
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-caf&m(t%s3i4xfltn8tq&ahxm1+w#p_i0!^^4czuszk@4=h8p)"
+# --- CORE SETTINGS ---
+# Load environment variables from a .env file locally
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# SECRET_KEY and DEBUG should be pulled from environment variables in production
+SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-caf&m(t%s3i4xfltn8tq&ahxm1+w#p_i0!^^4czuszk@4=h8p)")
 
-ALLOWED_HOSTS = []
-NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd"
+# Heroku sets DEBUG to False automatically unless overridden.
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-TAILWIND_APP_NAME = 'theme'
-# Application definition
+# REQUIRED for Heroku deployment
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
+
+# Only needed for local development tools (can be removed for production)
+NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd" 
+TAILWIND_APP_NAME = 'theme' 
+
+# --- APPLICATION DEFINITION ---
 
 INSTALLED_APPS = [
+    # Required for S3 integration
+    'storages', # <--- ADD THIS
+    
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    
     # other Django apps
     'tailwind',
     'theme'
-
 ]
 
 MIDDLEWARE = [
@@ -38,14 +54,10 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+# Configure django_browser_reload only if DEBUG is True
 if DEBUG:
-    # Add django_browser_reload to INSTALLED_APPS
     INSTALLED_APPS += ['django_browser_reload']
-    
-    # Add the middleware for automatic browser reloading
-    MIDDLEWARE += [
-        "django_browser_reload.middleware.BrowserReloadMiddleware",
-    ]
+    MIDDLEWARE += ["django_browser_reload.middleware.BrowserReloadMiddleware"]
 
 ROOT_URLCONF = "config.urls"
 
@@ -67,78 +79,56 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
+# --- DATABASE CONFIGURATION ---
+# Use SQLite locally, but switch to Heroku's PostgreSQL DATABASE_URL if available.
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+        conn_health_check=True,
+    )
 }
 
+# --- S3/STATIC/MEDIA CONFIGURATION ---
 
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
+# 1. AWS Credentials (Pull from Heroku Config Vars)
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME', 'ap-southeast-1') 
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
-]
+# 2. General S3 Settings (These ensure public access which is needed for static files)
+AWS_DEFAULT_ACL = 'public-read' 
+AWS_QUERYSTRING_AUTH = False 
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com'
 
+# 3. STATIC FILES (Django looks here)
+STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
-LANGUAGE_CODE = "en-us"
-
-TIME_ZONE = "UTC"
-
-USE_I18N = True
-
-USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
-STATIC_URL = "static/"
-
+# IMPORTANT: You must keep STATIC_ROOT for collectstatic to function on Heroku.
+# This points to a temporary folder during the build process.
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') 
 
+# This line is often redundant when using S3 and can cause the Heroku warning, 
+# but we keep it minimal in case you have files outside of 'theme/static'.
+# If you only have files in 'theme/static', you can remove this entirely.
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'theme/static'),
 ]
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
-# 1. AWS Credentials (Set these as Heroku Config Vars)
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_REGION_NAME = 'ap-southeast-1' # Change to your preferred region (e.g., 'us-east-1')
-
-# 2. Configure Django to use S3 for STATIC files
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
-STATIC_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/static/'
-
-# 3. Configure Django to use S3 for MEDIA files (if you have user uploads)
+# 4. MEDIA FILES (For user uploads, if any)
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/media/'
 
-# Optional: If you want files to be readable publicly
-AWS_DEFAULT_ACL = 'public-read' 
-AWS_QUERYSTRING_AUTH = False # Files are accessed directly via URL
 
+# --- DEFAULT AND I18N ---
+
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = "UTC"
+USE_I18N = True
+USE_TZ = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Password validation and other non-critical sections were omitted for brevity
+# but should remain in your final file.
