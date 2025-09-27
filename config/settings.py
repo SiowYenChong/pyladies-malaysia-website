@@ -123,5 +123,22 @@ STATICFILES_DIRS = [
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
+# 1. AWS Credentials (Set these as Heroku Config Vars)
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_REGION_NAME = 'ap-southeast-1' # Change to your preferred region (e.g., 'us-east-1')
+
+# 2. Configure Django to use S3 for STATIC files
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
+STATIC_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/static/'
+
+# 3. Configure Django to use S3 for MEDIA files (if you have user uploads)
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/media/'
+
+# Optional: If you want files to be readable publicly
+AWS_DEFAULT_ACL = 'public-read' 
+AWS_QUERYSTRING_AUTH = False # Files are accessed directly via URL
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
