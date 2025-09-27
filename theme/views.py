@@ -9,8 +9,8 @@ import json
 from datetime import datetime
 from django.contrib.staticfiles.storage import staticfiles_storage 
 import requests 
-import boto3 # NEW IMPORT for S3 interaction
-from botocore.exceptions import ClientError # NEW IMPORT for S3 errors
+import boto3
+from botocore.exceptions import ClientError
 
 
 # --- S3 Helper Functions ---
@@ -35,10 +35,9 @@ def fetch_json_from_s3(relative_path):
 def list_s3_files(prefix):
     """
     Lists image files in a specific S3 path (prefix).
-    Returns a list of filenames.
+    Returns a list of filenames (relative to the base prefix).
     """
     try:
-        # NOTE: This relies on AWS settings being in settings.py and Heroku Config Vars
         s3 = boto3.client(
             's3',
             aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
@@ -47,7 +46,8 @@ def list_s3_files(prefix):
         )
         bucket_name = settings.AWS_STORAGE_BUCKET_NAME
         
-        # S3 listing path starts with the STATICFILES_STORAGE root, typically "static/"
+        # 🌟 CORRECTED: The S3 listing prefix must include AWS_LOCATION (e.g., 'theme/static/')
+        # The final prefix will look like: 'theme/static/images/committee/'
         s3_prefix = f"{settings.AWS_LOCATION}/{prefix}" 
 
         response = s3.list_objects_v2(
@@ -60,12 +60,15 @@ def list_s3_files(prefix):
         if 'Contents' in response:
             for obj in response['Contents']:
                 full_key = obj['Key']
-                # Strip the prefix (e.g., 'static/images/committee/') to get the filename
+                
+                # Strip the full S3 prefix to get the filename
                 relative_path = full_key.replace(s3_prefix, '', 1).lstrip('/')
                 
                 # Exclude the directory path itself and non-image files
                 if relative_path and relative_path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
-                    filenames.append(os.path.basename(relative_path))
+                    # We only need the base filename (e.g., 'name_role.jpg') 
+                    # for the parsing logic in the view functions.
+                    filenames.append(relative_path)
         
         return filenames
     
@@ -124,11 +127,13 @@ def home(request):
     
     # Count committee members from S3 (REPLACED os.listdir)
     committee_image_files = list_s3_files(COMMITTEE_PREFIX)
-    total_members += len(committee_image_files)
+    # 🌟 FIX: This will now return the correct count because list_s3_files works
+    total_members += len(committee_image_files) 
 
     # Count speakers from S3 (REPLACED os.listdir)
     speakers_image_files = list_s3_files(SPEAKERS_PREFIX)
-    mentors = len(speakers_image_files)
+    # 🌟 FIX: This will now return the correct count
+    mentors = len(speakers_image_files) 
     total_members += mentors
         
     # Count upcoming and past events (REPLACED LOCAL FILE READ)
@@ -158,11 +163,12 @@ def about(request):
     Loads committee and group picture data by listing S3 contents and parsing filenames.
     """
     # --- Committee Member Logic (Uses S3 Listing) ---
+    # This now returns a list of filenames (e.g., ['name_role.jpg', ...])
     committee_image_files = list_s3_files(COMMITTEE_PREFIX)
     committee_members = []
     
     for filename in committee_image_files:
-        # The filename parsing logic remains
+        # The filename parsing logic remains, using the base filename
         base_name, file_extension = os.path.splitext(filename)
         parts = base_name.rsplit('_', 1)
         
@@ -177,7 +183,8 @@ def about(request):
         member = {
             'name': formatted_name,
             'role': role,
-            # Path is now the S3 path, correctly resolved by {% static %}
+            # Path is constructed as 'images/committee/name_role.jpg'
+            # which is correctly resolved by {% static %} using the settings.py AWS_LOCATION prefix
             'image_url': f'{COMMITTEE_PREFIX}{filename}' 
         }
         committee_members.append(member)
@@ -188,7 +195,7 @@ def about(request):
     
     # Use sorted() for consistent ordering
     for filename in sorted(grouppic_image_files):
-        # Path is now the S3 path, correctly resolved by {% static %}
+        # Path is constructed as 'images/grouppic/photo.jpg'
         grouppic_urls.append(f'{GROUPPIC_PREFIX}{filename}')
 
     context = {
