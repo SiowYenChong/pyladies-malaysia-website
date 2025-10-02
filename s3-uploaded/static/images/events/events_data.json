@@ -1,8 +1,19 @@
 [
     {
+        "title": "PyLadies x PyData Kuala Lumpur Meetup",
+        "date": "2025-10-30",
+        "end_date": "2025-10-30",
+        "time": "18:30 - 21:30",
+        "location": "The Access Group, Level 17, Menara Exchange 106, Lingkaran TRX, Kuala Lumpur",
+        "speaker": "Cheuk Ting Ho & Kim-Ann Git",
+        "speaker_url": null,
+        "topic_url": "https://pyladieskl-pydatakl.peatix.com/",
+        "description": "The inaugural PyLadies KL meetup, held in collaboration with PyData Kuala Lumpur and in conjunction with PyCon Malaysia. Features talks on 'The Danger of Missing Data' by Cheuk Ting Ho and 'Healthcare Analytics' by Kim-Ann Git."
+    },
+    {
         "title": "PyCon Malaysia 2025",
         "date": "2025-11-01",
-        "end_date": "2025-11-02", 
+        "end_date": "2025-11-02",
         "time": "TBC",
         "location": "Sunway University's Conference Hall",
         "speaker": "Various Speakers",
@@ -13,7 +24,7 @@
     {
         "title": "Django Girls workshop",
         "date": "2025-11-01",
-        "end_date": "2025-11-01", 
+        "end_date": "2025-11-01",
         "time": "TBC",
         "location": "Sunway University (Day 1 of PyCon MY 2025)",
         "speaker": "Jenna Kassim",
