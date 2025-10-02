@@ -1,23 +1,30 @@
 [
-  {
-    "slug": "announcing-our-first-pycon",
-    "title": "Announcing Our First PyCon!",
-    "date": "2025-08-17",
-    "summary": "Join us as we announce our participation in PyCon. We're excited to contribute to the community and showcase the amazing work our members have been doing.",
-    "content": "<h2>PyLadies at PyCon 2025</h2><p>We are incredibly excited to announce that PyLadies Kuala Lumpur will be at PyCon 2025! This is a huge milestone for our local chapter, and we're looking forward to representing our community on a global stage.</p><p>We will have a dedicated booth where you can meet our members, learn about our projects, and get to know our mission. We're also proud to have several members presenting talks and workshops. We can't wait to see you there!</p>"
-  },
-  {
-    "slug": "first-ever-django-workshop",
-    "title": "Recap: First-Ever Django Workshop",
-    "date": "2025-07-20",
-    "summary": "Our inaugural Django workshop was a great success! We had an amazing group of beginners learn the fundamentals of web development with Django.",
-    "content": "<h2>Building Our First Web App</h2><p>A huge thank you to everyone who attended our first Django workshop. The energy and enthusiasm were incredible! Over the course of the day, our members learned how to set up a Django project, create models, and build their first web application from scratch.</p><p>We covered topics such as routing, database migrations, and a brief introduction to the Django Admin. We're already planning our next workshop, so stay tuned for more details!</p>"
-  },
-  {
-    "slug": "welcome-to-pyladies-kl",
-    "title": "Welcome to PyLadies Kuala Lumpur",
-    "date": "2025-06-01",
-    "summary": "We're thrilled to officially launch the PyLadies chapter in Kuala Lumpur. Our mission is to create a safe and welcoming space for women in the Python community.",
-    "content": "<h2>A New Chapter for PyLadies</h2><p>Welcome to the official blog of PyLadies Kuala Lumpur! We are thrilled to officially launch our chapter and start building a supportive and empowering community for women and non-binary individuals who are passionate about Python.</p><p>Our goal is to foster an environment where everyone feels comfortable asking questions, sharing knowledge, and growing their skills. We'll be hosting regular meetups, workshops, and coding sessions. Follow us on social media to stay updated on our upcoming events!</p>"
-  }
+    {
+        "slug": "pyladies-pydatal-meetup-launch",
+        "title": "Launch Event: PyLadies KL x PyData KL Meetup!",
+        "date": "2025-09-25",
+        "summary": "Join us for our inaugural PyLadies KL event in collaboration with PyData KL! Featuring expert talks on Data Science and Healthcare Analytics at The Access Group, TRX.",
+        "content": "<h2>Our First Major Meetup!</h2><p>We are thrilled to announce that the newly launched **PyLadies Kuala Lumpur** chapter will host its first major community meetup on **Thursday, October 30, 2025**, in partnership with **PyData Kuala Lumpur**! This landmark event is being held just ahead of PyCon Malaysia, making it the perfect opportunity to connect with the wider Python and Data community.</p><p>We are grateful to be hosted by **The Access Group** at their premium location on Level 17, Menara Exchange 106, **TRX**.</p><h3>What's on the Agenda?</h3><p>Doors open at 6:30 PM with light refreshments and networking, followed by two high-impact sessions:</p><ul><li>**The Danger of Missing Data** by **Cheuk Ting Ho** (Developer Advocate, JetBrains, and PSF Director). Cheuk will guide us through common pitfalls and best practices in handling incomplete data.</li><li>**Healthcare Data Analytics** by **Kim-Ann Git** (Consultant Radiologist & Certified Imaging Informatics Professional). Kim-Ann will share fascinating insights into practical applications of data science in the medical field.</li></ul><p>This is a chance to gain valuable knowledge, network with industry experts, and help us build the future of the women-in-Python community in KL. **Tickets are FREE but limited!** Grab yours now: <a href=\"https://pyladieskl-pydatakl.peatix.com/\">https://pyladieskl-pydatakl.peatix.com/</a></p>"
+    },
+    {
+        "slug": "announcing-pycon-2025",
+        "title": "Announcing PyCon 2025!",
+        "date": "2025-08-17",
+        "summary": "Join us as we announce our participation in PyCon 2025. We're excited to contribute to the community and showcase the amazing work our members have been doing.",
+        "content": "<h2>PyLadies at PyCon 2025</h2><p>We are incredibly excited to announce that PyLadies Kuala Lumpur will be at **PyCon 2025**! This is a huge milestone for our local chapter, and we're looking forward to representing our community on a global stage.</p><p>We will have a dedicated booth where you can meet our members, learn about our projects, and get to know our mission. We're also proud to have several members presenting talks and workshops. We can't wait to see you there!</p>"
+    },
+    {
+        "slug": "first-ever-django-workshop",
+        "title": "Upcoming: First-Ever Django Workshop!",
+        "date": "2025-07-20",
+        "summary": "Get ready for our inaugural Django workshop! We will be covering the fundamentals of web development with Python's popular framework, Django.",
+        "content": "<h2>Build Your First Web App with Django</h2><p>Mark your calendars! We are excited to announce our first-ever **Django workshop**, scheduled to take place on **November 1, 2025**, as part of **PyCon Malaysia 2025**!</p><p>This beginner-friendly, hands-on session is the perfect opportunity to learn the fundamentals of web development with Python's powerful framework. Our experienced instructors will guide you through setting up a Django project, creating models, handling routing, and building your first functional web application from scratch. No prior Django experience is required—just an interest in coding!</p><p>Stay tuned for registration details, which will be announced soon on our social media channels!</p>"
+    },
+    {
+        "slug": "welcome-to-pyladies-kl",
+        "title": "Welcome to PyLadies Kuala Lumpur",
+        "date": "2025-06-01",
+        "summary": "We're thrilled to officially launch the PyLadies chapter in Kuala Lumpur. Our mission is to create a safe and welcoming space for women in the Python community.",
+        "content": "<h2>A New Chapter for PyLadies</h2><p>Welcome to the official blog of **PyLadies Kuala Lumpur**! We are thrilled to officially launch our chapter and start building a supportive and empowering community for women and non-binary individuals who are passionate about Python.</p><p>Our goal is to foster an environment where everyone feels comfortable asking questions, sharing knowledge, and growing their skills. We'll be hosting regular meetups, workshops, and coding sessions. Follow us on social media to stay updated on our upcoming events!</p>"
+    }
 ]
