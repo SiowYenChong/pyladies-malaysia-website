@@ -1,34 +1,35 @@
 [
-    {
-        "title": "PyLadies x PyData Kuala Lumpur Meetup",
-        "date": "2025-10-30",
-        "end_date": "2025-10-30",
-        "time": "18:30 - 21:30",
-        "location": "The Access Group, Level 17, Menara Exchange 106, Lingkaran TRX, Kuala Lumpur",
-        "speaker": "Cheuk Ting Ho & Kim-Ann Git",
-        "speaker_url": null,
-        "topic_url": "https://pyladieskl-pydatakl.peatix.com/",
-        "description": "The inaugural PyLadies KL meetup, held in collaboration with PyData Kuala Lumpur and in conjunction with PyCon Malaysia. Features talks on 'The Danger of Missing Data' by Cheuk Ting Ho and 'Healthcare Analytics' by Kim-Ann Git."
-    },
-    {
-        "title": "PyCon Malaysia 2025",
-        "date": "2025-11-01",
-        "end_date": "2025-11-02",
-        "time": "TBC",
-        "location": "Sunway University's Conference Hall",
-        "speaker": "Various Speakers",
-        "speaker_url": null,
-        "topic_url": "https://www.eventbrite.sg/e/pycon-my-2025-tickets-1447422954019",
-        "description": "We are so excited to welcome our community back to the sunny city of Kuala Lumpur for PyCon MY 2025! Mark your calendars and be sure to read the About PyCon MY page for more details. We can't wait to see you all at the Sunway University's Conference Hall again this year!"
-    },
-    {
-        "title": "Django Girls workshop",
-        "date": "2025-11-01",
-        "end_date": "2025-11-01",
-        "time": "TBC",
-        "location": "Sunway University (Day 1 of PyCon MY 2025)",
-        "speaker": "Jenna Kassim",
-        "speaker_url": null,
-        "topic_url": null
-    }
+{
+"title": "PyLadies x PyData Kuala Lumpur Meetup",
+"date": "2025-10-30",
+"end_date": "2025-10-30",
+"time": "18:30 - 21:30",
+"location": "The Access Group, Level 17, Menara Exchange 106, Lingkaran TRX, Kuala Lumpur",
+"speaker": "Cheuk Ting Ho & Kim-Ann Git",
+"speaker_url": "https://kl.pyladies.com/speakers/",
+"topic_url": "https://pyladieskl-pydatakl.peatix.com/",
+"description": "The inaugural PyLadies KL meetup, held in collaboration with PyData Kuala Lumpur and in conjunction with PyCon Malaysia. Features talks on 'The Danger of Missing Data' by Cheuk Ting Ho and 'Fundamentals of Medical Data for AI Development' by Dr. Kim-Ann Git. Agenda: Registration at 18:00, light refreshments, welcome remarks, talks, Q&A, networking, and group photo. Everyone is welcome regardless of gender!"
+},
+{
+"title": "PyCon Malaysia 2025",
+"date": "2025-11-01",
+"end_date": "2025-11-02",
+"time": "TBC",
+"location": "Sunway University's Conference Hall",
+"speaker": "Various Speakers",
+"speaker_url": "https://www.pycon.my/speakers",
+"topic_url": "https://www.eventbrite.sg/e/pycon-my-2025-tickets-1447422954019",
+"description": "We are so excited to welcome our community back to the sunny city of Kuala Lumpur for PyCon MY 2025! Mark your calendars and be sure to read the About PyCon MY page for more details. We can't wait to see you all at the Sunway University's Conference Hall again this year!"
+},
+{
+"title": "Django Girls workshop",
+"date": "2025-11-01",
+"end_date": "2025-11-01",
+"time": "8:30 - 18:00",
+"location": "Lecture Hall 5, Sunway University (Day 1 of PyCon MY 2025)",
+"speaker": "Jenna Kassim",
+"speaker_url": "https://kl.pyladies.com/speakers/",
+"topic_url": "https://djangogirls.org/es/kualalumpur/",
+"description": "Join the Django Girls workshop on the first day of PyCon Malaysia. Agenda: Registration (8:30-9:00), Opening Ceremony (9:00-9:30), Keynote (9:30-10:00), PyLadies/Django/Workshop introduction (10:00-10:20), Sharing by Ga Mei (tentative, 10:20-10:50), Workshop (10:50-12:15), Lunch (12:15-13:15), Sharing by Brianna (13:30-14:00), Workshop (14:00-16:15), Tea break (16:15-17:00), Workshop (17:00-18:00)."
+}
 ]
