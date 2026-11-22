@@ -12,7 +12,7 @@ Follow these steps to get a local copy of the project running for development.
 
 ### Prerequisites
 
-You must have Python (3.9+) and pip installed.
+You must have Python 3.10+ (3.12 matches the Azure runtime) and pip installed.
 
 1.  **Clone the Repository:**
     ```bash
@@ -33,24 +33,12 @@ You must have Python (3.9+) and pip installed.
     ```
 
 4.  **Configure Environment Variables:**
-    The project uses AWS S3 for static files and content. For local development, you need a placeholder `.env` file.
-
-    **Create a file named `.env` in the root directory:**
+    Site content (images and JSON) is read from `theme/static/` in the repo, so no cloud storage or AWS credentials are needed. Create a file named `.env` in the root directory:
     ```env
-    # Essential Django Settings
     SECRET_KEY='django-insecure-your-secret-key-for-local'
     DEBUG=True
-    
-    # Optional: Mock S3 Credentials for Boto3 (Only needed if local file listing fails)
-    # AWS_ACCESS_KEY_ID='AKIA...'
-    # AWS_SECRET_ACCESS_KEY='...'
-    
-    # Set AWS_LOCATION to match your settings.py if using S3 locally
-    AWS_LOCATION='theme/static' 
-    
-    # Use the local filesystem for static files by default (DEBUG=True)
-    # If using custom S3 logic, ensure you have read access.
     ```
+    `SECRET_KEY` is required. If `DATABASE_URL` is not set, the app uses a local SQLite database.
 
 5.  **Run Migrations (if needed) & Server:**
     ```bash
@@ -85,10 +73,10 @@ Key files and directories for collaborators to understand:
 
 | Path | Description |
 | :--- | :--- |
-| `pyladies_kl/settings.py` | theme Django configuration, including S3 settings. |
-| `theme/views.py` | Contains all page logic (`home`, `about`, `events`, etc.). This is where **S3 content fetching and filtering** occurs. |
+| `config/settings.py` | Django configuration. Reads `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`, and `DATABASE_URL` from the environment. |
+| `theme/views.py` | Contains all page logic (`home`, `about`, `events`, etc.). This is where **content loading and filtering** occurs. |
 | `theme/templates/` | Django templates (`home.html`, `about.html`, etc.). Uses Jinja-style syntax and Tailwind classes. |
-| `theme/static/images/` | **The S3 content directories.** Static assets like committee photos, speaker photos, and JSON data files are stored here (e.g., `images/committee/`, `images/events/`). |
+| `theme/static/images/` | **The site content directories.** Static assets like committee photos, speaker photos, and JSON data files are stored here (e.g., `images/committee/`, `images/events/`). |
 | `theme/static/css/` | Tailwind CSS output and custom styles. |
 
 ---
@@ -103,10 +91,12 @@ Most contributions will involve updating static content.
 
 | Task | Location | Details |
 | :--- | :--- | :--- |
-| **Update Committee** | S3: `images/committee/` | Upload image files named `firstname-lastname_role.jpg` |
-| **Add Events** | S3: `images/events/events_data.json` | Edit the JSON file with new event entries. |
-| **Add Blog Posts** | S3: `images/blog/blog_posts.json` | Edit the JSON file with new post entries. |
-| **Code Fixes** | `theme/views.py` & `theme/templates/` | Fix bugs, enhance UI, or improve S3 interaction logic. |
+| **Update Committee** | `theme/static/images/committee/` | Add image files named `firstname-lastname_role.jpg` |
+| **Add Events** | `theme/static/images/events/events_data.json` | Edit the JSON file with new event entries. |
+| **Add Blog Posts** | `theme/static/images/blog/blog_posts.json` | Edit the JSON file with new post entries. |
+| **Code Fixes** | `theme/views.py` & `theme/templates/` | Fix bugs or enhance UI. |
+
+Content changes take effect after they are committed and deployed. Editing files on the live server has no lasting effect.
 
 ### 2. Fork and Branch
 
