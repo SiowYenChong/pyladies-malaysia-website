@@ -7,76 +7,40 @@ from django.http import HttpResponse, Http404
 from datetime import date
 import json
 from datetime import datetime
-from django.contrib.staticfiles.storage import staticfiles_storage 
-import requests 
-import boto3
-from botocore.exceptions import ClientError
+from pathlib import Path
 
 
-# --- S3 Helper Functions ---
+# Source directory for site content (images and JSON data)
+STATIC_SOURCE_DIR = Path(settings.BASE_DIR) / 'theme' / 'static'
 
-def fetch_json_from_s3(relative_path):
-    """Fetches JSON content from a static file stored on S3."""
+
+# --- Static Content Helper Functions ---
+
+def fetch_json_from_static(relative_path):
+    """Loads JSON content from a file in the static source directory."""
     try:
-        # Get the public URL for the file from the static file storage (S3)
-        file_url = staticfiles_storage.url(relative_path)
-        
-        # Use requests to fetch the content from the S3 URL
-        response = requests.get(file_url)
-        response.raise_for_status() # Raise HTTPError for bad responses (4xx or 5xx)
-        return response.json()
+        with open(STATIC_SOURCE_DIR / relative_path, encoding='utf-8') as f:
+            return json.load(f)
     except Exception as e:
-        print(f"Error fetching JSON from S3 at {relative_path}: {e}")
+        print(f"Error loading JSON from static file {relative_path}: {e}")
         # Return an empty list/dict based on typical JSON data structure
         if "expertise_map" in relative_path:
             return {}
         return []
 
-def list_s3_files(prefix):
+def list_static_files(prefix):
     """
-    Lists image files in a specific S3 path (prefix).
-    Returns a list of filenames (relative to the base prefix).
+    Lists image files in a specific static directory (prefix).
+    Returns a sorted list of filenames (relative to the prefix).
     """
     try:
-        s3 = boto3.client(
-            's3',
-            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-            region_name=settings.AWS_S3_REGION_NAME
+        directory = STATIC_SOURCE_DIR / prefix
+        return sorted(
+            entry.name for entry in directory.iterdir()
+            if entry.is_file() and entry.name.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))
         )
-        bucket_name = settings.AWS_STORAGE_BUCKET_NAME
-        
-        # 🌟 CORRECTED: The S3 listing prefix must include AWS_LOCATION (e.g., 'theme/static/')
-        # The final prefix will look like: 'theme/static/images/committee/'
-        s3_prefix = f"{settings.AWS_LOCATION}/{prefix}" 
-
-        response = s3.list_objects_v2(
-            Bucket=bucket_name,
-            Prefix=s3_prefix,
-            Delimiter='/'
-        )
-        
-        filenames = []
-        if 'Contents' in response:
-            for obj in response['Contents']:
-                full_key = obj['Key']
-                
-                # Strip the full S3 prefix to get the filename
-                relative_path = full_key.replace(s3_prefix, '', 1).lstrip('/')
-                
-                # Exclude the directory path itself and non-image files
-                if relative_path and relative_path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
-                    # We only need the base filename (e.g., 'name_role.jpg') 
-                    # for the parsing logic in the view functions.
-                    filenames.append(relative_path)
-        
-        return filenames
-    
-    except ClientError as e:
-        print(f"Boto3 ClientError listing S3 files for prefix {prefix}: {e}")
-        return []
     except Exception as e:
-        print(f"General error listing S3 files: {e}")
+        print(f"Error listing static files for prefix {prefix}: {e}")
         return []
 
 # --- JSON Path Constants ---
@@ -84,7 +48,7 @@ BLOG_POSTS_PATH = 'images/blog/blog_posts.json'
 EVENTS_DATA_PATH = 'images/events/events_data.json'
 SPEAKERS_EXPERTISE_MAP_PATH = 'images/speakers/speakers_expertise_map.json'
 
-# --- S3 Directory Prefix Constants ---
+# --- Static Directory Prefix Constants ---
 COMMITTEE_PREFIX = 'images/committee/'
 SPEAKERS_PREFIX = 'images/speakers/'
 GROUPPIC_PREFIX = 'images/grouppic/'
@@ -97,8 +61,8 @@ def become_member(request):
 
 # A helper function to load the JSON data (REPLACED LOCAL FILE READ)
 def load_blog_posts():
-    """Loads blog post data from S3."""
-    return fetch_json_from_s3(BLOG_POSTS_PATH)
+    """Loads blog post data from the static directory."""
+    return fetch_json_from_static(BLOG_POSTS_PATH)
 
 def blog(request):
     posts = load_blog_posts()
@@ -117,7 +81,7 @@ def blog_detail(request, slug):
 
 def home(request):
     """
-    Calculates dynamic statistics for the website from JSON and S3 image files.
+    Calculates dynamic statistics for the website from JSON and static image files.
     """
     # Initialize all counters to zero
     total_members = 0
@@ -125,19 +89,17 @@ def home(request):
     past_events = 0
     mentors = 0
     
-    # Count committee members from S3 (REPLACED os.listdir)
-    committee_image_files = list_s3_files(COMMITTEE_PREFIX)
-    # 🌟 FIX: This will now return the correct count because list_s3_files works
-    total_members += len(committee_image_files) 
+    # Count committee members from the static image directory
+    committee_image_files = list_static_files(COMMITTEE_PREFIX)
+    total_members += len(committee_image_files)
 
-    # Count speakers from S3 (REPLACED os.listdir)
-    speakers_image_files = list_s3_files(SPEAKERS_PREFIX)
-    # 🌟 FIX: This will now return the correct count
-    mentors = len(speakers_image_files) 
+    # Count speakers from the static image directory
+    speakers_image_files = list_static_files(SPEAKERS_PREFIX)
+    mentors = len(speakers_image_files)
     total_members += mentors
         
     # Count upcoming and past events (REPLACED LOCAL FILE READ)
-    events_data = fetch_json_from_s3(EVENTS_DATA_PATH)
+    events_data = fetch_json_from_static(EVENTS_DATA_PATH)
     
     today = datetime.now().date()
     for event in events_data:
@@ -160,11 +122,11 @@ def home(request):
 
 def about(request):
     """
-    Loads committee and group picture data by listing S3 contents and parsing filenames.
+    Loads committee and group picture data by listing static image files and parsing filenames.
     """
-    # --- Committee Member Logic (Uses S3 Listing) ---
-    # This now returns a list of filenames (e.g., ['name_role.jpg', ...])
-    committee_image_files = list_s3_files(COMMITTEE_PREFIX)
+    # --- Committee Member Logic ---
+    # This returns a list of filenames (e.g., ['name_role.jpg', ...])
+    committee_image_files = list_static_files(COMMITTEE_PREFIX)
     committee_members = []
     
     for filename in committee_image_files:
@@ -184,13 +146,13 @@ def about(request):
             'name': formatted_name,
             'role': role,
             # Path is constructed as 'images/committee/name_role.jpg'
-            # which is correctly resolved by {% static %} using the settings.py AWS_LOCATION prefix
+            # which is resolved by {% static %} against STATIC_URL
             'image_url': f'{COMMITTEE_PREFIX}{filename}' 
         }
         committee_members.append(member)
 
-    # --- Group Picture Logic (Uses S3 Listing) ---
-    grouppic_image_files = list_s3_files(GROUPPIC_PREFIX)
+    # --- Group Picture Logic ---
+    grouppic_image_files = list_static_files(GROUPPIC_PREFIX)
     grouppic_urls = []
     
     # Use sorted() for consistent ordering
@@ -206,7 +168,7 @@ def about(request):
     return render(request, 'about.html', context)
 
 def events(request):
-    raw_events_data = fetch_json_from_s3(EVENTS_DATA_PATH)
+    raw_events_data = fetch_json_from_static(EVENTS_DATA_PATH)
     
     # Determine the desired view (Upcoming or Past)
     is_past_events_page = request.GET.get('m') == 'false'
@@ -269,11 +231,11 @@ def speakers(request):
     speakers_data = []
     expertises = set()
 
-    # Step 1: Load the expertise mapping from S3 (REPLACED LOCAL FILE READ)
-    expertise_map = fetch_json_from_s3(SPEAKERS_EXPERTISE_MAP_PATH) or {}
+    # Step 1: Load the expertise mapping from the static directory
+    expertise_map = fetch_json_from_static(SPEAKERS_EXPERTISE_MAP_PATH) or {}
 
-    # Step 2: Process speaker images and combine with expertise data (Uses S3 Listing)
-    speaker_image_files = list_s3_files(SPEAKERS_PREFIX)
+    # Step 2: Process speaker images and combine with expertise data
+    speaker_image_files = list_static_files(SPEAKERS_PREFIX)
     
     for filename in speaker_image_files:
         
@@ -297,7 +259,7 @@ def speakers(request):
         speaker_info = {
             'name': formatted_name,
             'title': title,
-            # S3 relative path
+            # Static relative path
             'image_url': f'{SPEAKERS_PREFIX}{filename}',
             'expertise': speaker_expertise
         }

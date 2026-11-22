@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 import dj_database_url # <--- REQUIRED FOR HEROKU POSTGRES
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,13 +15,20 @@ except ImportError:
     pass
 
 # SECRET_KEY and DEBUG should be pulled from environment variables in production
-SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-caf&m(t%s3i4xfltn8tq&ahxm1+w#p_i0!^^4czuszk@4=h8p)")
+# SECRET_KEY must come from the environment (set it in App Service configuration)
+SECRET_KEY = os.environ.get("SECRET_KEY")
+if not SECRET_KEY:
+    raise ImproperlyConfigured("The SECRET_KEY environment variable must be set.")
 
 # Heroku sets DEBUG to False automatically unless overridden.
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 # REQUIRED for Heroku deployment
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
+
+# Azure App Service terminates HTTPS at the proxy, so trust its forwarded protocol
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+CSRF_TRUSTED_ORIGINS = [origin for origin in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if origin]
 
 # Only needed for local development tools (can be removed for production)
 NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd" 
@@ -29,9 +37,6 @@ TAILWIND_APP_NAME = 'theme'
 # --- APPLICATION DEFINITION ---
 
 INSTALLED_APPS = [
-    # Required for S3 integration
-    'storages', # <--- ADD THIS
-    
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -46,6 +51,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -88,39 +94,20 @@ DATABASES = {
     )
 }
 
-# --- S3/STATIC/MEDIA CONFIGURATION ---
-
-# 1. AWS Credentials (Pull from Heroku Config Vars)
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME', 'ap-southeast-1') 
-
-# 2. General S3 Settings (These ensure public access which is needed for static files)
-AWS_DEFAULT_ACL = 'public-read' 
-AWS_QUERYSTRING_AUTH = False 
-AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com'
-
-# 3. STATIC FILES (Django looks here)
-# THIS SECTION IS THE CORRECTED ONE (from siowyencommit)
-AWS_LOCATION = 'theme/static' 
-STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/' 
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
-
-# IMPORTANT: You must keep STATIC_ROOT for collectstatic to function on Heroku.
-# This points to a temporary folder during the build process.
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') 
-
-# This line is often redundant when using S3 and can cause the Heroku warning, 
-# but we keep it minimal in case you have files outside of 'theme/static'.
-# If you only have files in 'theme/static', you can remove this entirely.
+# --- STATIC FILES (served by WhiteNoise, content lives in theme/static) ---
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'theme/static'),
 ]
-
-# 4. MEDIA FILES (For user uploads, if any)
-MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 
 
 # --- DEFAULT AND I18N ---

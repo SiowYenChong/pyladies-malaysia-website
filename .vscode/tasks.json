@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run Django locally",
+			"type": "shell",
+			"command": "$ErrorActionPreference = 'Stop'; if (-not (Test-Path '.\\.venv\\Scripts\\python.exe')) { python -m venv .venv; if ($LASTEXITCODE -ne 0) { throw 'Virtual environment creation failed' } }; .\\.venv\\Scripts\\python.exe -m pip show Django gunicorn psycopg2-binary asgiref sqlparse tzdata dj-database-url whitenoise requests requests-file python-dotenv python-dateutil python-slugify django-tailwind django-browser-reload watchdog certifi charset-normalizer idna urllib3 pytz; if ($LASTEXITCODE -ne 0) { .\\.venv\\Scripts\\python.exe -m pip install -r requirements.txt; if ($LASTEXITCODE -ne 0) { throw 'Dependency installation failed' } }; $env:SECRET_KEY = 'local-development-only-not-for-production'; $env:DEBUG = 'True'; $env:ALLOWED_HOSTS = 'localhost,127.0.0.1'; .\\.venv\\Scripts\\python.exe manage.py migrate; if ($LASTEXITCODE -ne 0) { throw 'Database migration failed' }; .\\.venv\\Scripts\\python.exe manage.py runserver",
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}

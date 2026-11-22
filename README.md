@@ -62,6 +62,23 @@ You must have Python (3.9+) and pip installed.
 
 ---
 
+## ☁️ Azure App Service (Deployment)
+
+`startup.sh` runs `collectstatic` and then starts Gunicorn on `0.0.0.0:$PORT`. In the Web App's **Configuration > General settings**, set the startup command to `bash startup.sh`.
+
+Required app settings:
+
+| Setting | Value |
+| :--- | :--- |
+| `SECRET_KEY` | A long random value (required, the app will not start without it) |
+| `DEBUG` | `False` |
+| `ALLOWED_HOSTS` | `<app-name>.azurewebsites.net` |
+| `CSRF_TRUSTED_ORIGINS` | `https://<app-name>.azurewebsites.net` |
+| `DATABASE_URL` | PostgreSQL connection string (optional; SQLite does not persist on App Service) |
+| `SCM_DO_BUILD_DURING_DEPLOYMENT` | `true` (installs `requirements.txt` on deploy) |
+
+---
+
 ## 📁 Project Structure
 
 Key files and directories for collaborators to understand:
